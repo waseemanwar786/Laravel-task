@@ -31,7 +31,7 @@
                     </div>
                     @if(isset($users))
                     <div class="col-4 text-end">
-                        <h3 class="mb-0 text-primary">{{ $users->count() ?? '' }}</h3>
+                        <h3 class="mb-0 text-dark" style="font-size: 30px">{{ $users->count() ?? '' }}</h3>
                     </div>
                     @endif
                 </div>
@@ -43,7 +43,7 @@
                     </div>
                     @if(isset($usersWithoutAddresses))
                     <div class="col-4 text-end">
-                        <h3 class="mb-0 text-primary">{{ $usersWithoutAddresses->count() ?? 'N/A' }}</h3>
+                        <h3 class="mb-0 text-dark" style="font-size: 30px">{{ $usersWithoutAddresses->count() ?? 'N/A' }}</h3>
                     </div>
                     @endif
                 </div>
@@ -54,7 +54,7 @@
                     </div>
                     @if(isset($duplicateAddresses))
                     <div class="col-4 text-end">
-                        <h3 class="mb-0 text-primary">{{ $duplicateAddresses->count() ?? 'N/A' }}</h3>
+                        <h3 class="mb-0 text-dark" style="font-size: 30px">{{ $duplicateAddresses->count() ?? 'N/A' }}</h3>
                     </div>
                     @endif
                 </div>
