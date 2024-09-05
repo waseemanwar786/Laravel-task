@@ -1,43 +1,27 @@
 <?php
-
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\User;
+use App\Models\UserAddress;
 use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
-    
-    public function getUserAddressCounts()
+    public function userOutput()
     {
-        $users = DB::table('users')
-        ->leftJoin('user_addresses', 'users.id', '=', 'user_addresses.user_id')
-        ->select('users.id', 'users.name', 'users.email', DB::raw('COUNT(user_addresses.id) as address_count'))
-        ->groupBy('users.id', 'users.name', 'users.email')
-        ->get();
-    
-    return view('dashboard', compact('users'));
-    }
+        // Select all records from users and count their records in user_addresses
+        $users = User::withCount('addresses')->get();
 
+        // Select all records from users whose records do not exist in user_addresses
+        $usersWithoutAddresses = User::doesntHave('addresses')->get();
 
-    public function getUsersWithoutAddresses()
-{
-    $usersWithoutAddresses = DB::table('users')
-    ->leftJoin('user_addresses', 'users.id', '=', 'user_addresses.user_id')
-    ->whereNull('user_addresses.user_id') // Check for null user_id in user_addresses
-    ->select('users.*')
-    ->get();
-
-    return view('dashboard', compact('usersWithoutAddresses'));
-}
-
-    public function getDuplicateAddresses()
-    {
-        $duplicateAddresses = DB::table('user_addresses')
-           ->select('address', DB::raw('COUNT(*) as count'))
-           ->groupBy('address')
-           ->havingRaw('COUNT(*) > 1') 
-           ->get();
-        return view('dashboard', compact('duplicateAddresses'));
+        // Select all duplicate records in user_addresses and count their iteration
+        $duplicateAddresses = UserAddress::select('address', DB::raw('COUNT(*) as address_count'))
+            ->groupBy('address')
+            ->having('address_count', '>', 1)
+            ->get();
+            
+        return view('dashboard', compact('users', 'usersWithoutAddresses', 'duplicateAddresses'));
     }
 }
+

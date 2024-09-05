@@ -5,14 +5,19 @@
         </h2>
     </x-slot>
     <div class="d-flex flex-column justify-content-center align-items-center mt-3 position-relative">
+        @if (session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+         </div>
+     @endif
         <div class="card shadow-lg" style="width: 30rem;">
             <div class="card-body">
-                <h5 class="card-title text-center mb-4 fw-bold">Import CSV File</h5>
+                <h5 class="card-title text-center mb-4 fw-bold">Import CSV/XLS File</h5>
                 <form action="{{ route('stock.import') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="form-group mb-3">
-                        <label for="csv_file" class="form-label">Upload CSV File</label>
-                        <input type="file" name="csv_file" class="form-control" required>
+                        <label for="file" class="form-label">Upload CSV/XLS File</label>
+                        <input type="file" name="file" class="form-control" required>
                     </div>
                     <div class="d-grid">
                         <button type="submit" class="btn btn-primary btn-block">Import</button>
@@ -23,45 +28,94 @@
         </div>
         <div class="card shadow-lg" style="width: 480px; margin: auto;">
             <div class="card-body">
-                <h5 class="card-title text-center mb-4 fw-bold">Task 3 Output</h5>
-                
-                <div class="row align-items-center mb-3">
-                    <div class="col-8">
-                        <a href="{{ route('user.address.counts') }}" class="btn btn-primary w-100">Show 1st output:</a>
-                    </div>
-                    @if(isset($users))
-                    <div class="col-4 text-end">
-                        <h3 class="mb-0 text-dark" style="font-size: 30px">{{ $users->count() ?? '' }}</h3>
-                    </div>
-                    @endif
+                @if(!isset($users))
+                <h5 class="card-title text-center mb-4 fw-bold" style="font-size: 24px; font-weight: bold; background-color: rgb(24, 7, 182); color: white;">Task 3</h5>
+                    <a class="btn btn-primary btn-block" href="{{ route('user.output') }}">Show output</a>
+                    <p>Please run user and userAddress Seeder to see the output of this task</p>
+                @endif
+                <div class="container">
+                    <h5 class="card-title text-center mb-4 fw-bold" style="font-size: 24px; font-weight: bold; background-color: red; color: white;">1st Output</h5>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>User ID</th>
+                                <th>User Name</th>
+                                <th>Address Count</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @isset($users)
+                            @foreach($users as $user)
+                                <tr>
+                                    <td>{{ $user->id }}</td>
+                                    <td>{{ $user->name }}</td>
+                                    <td>{{ $user->addresses_count }}</td>
+                                </tr>
+                            @endforeach
+                            @endisset
+                        </tbody>
+                    </table>
                 </div>
-                
-                
                 <div class="row align-items-center mb-3">
-                    <div class="col-8">
-                        <a href="{{ route('users.without.addresses') }}" class="btn btn-primary w-100">Show 2nd output:</a>
+                    <div class="container">
+                        <h5 class="card-title text-center mb-4 fw-bold" style="font-size: 24px; font-weight: bold; background-color: red; color: white;">2nd Output</h5>
+
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>User ID</th>
+                                    <th>User Name</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @isset($usersWithoutAddresses)
+                                @forelse($usersWithoutAddresses as $userwithoutAddress)
+                                    <tr>
+                                        <td>{{ $userwithoutAddress->id }}</td>
+                                        <td>{{ $userwithoutAddress->name }}</td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="2">No users without addresses found.</td>
+                                    </tr>
+                                @endforelse
+                                @endisset
+                            </tbody>
+                        </table>
                     </div>
-                    @if(isset($usersWithoutAddresses))
-                    <div class="col-4 text-end">
-                        <h3 class="mb-0 text-dark" style="font-size: 30px">{{ $usersWithoutAddresses->count() ?? 'N/A' }}</h3>
-                    </div>
-                    @endif
+                
                 </div>
                 
                 <div class="row align-items-center">
-                    <div class="col-8">
-                        <a href="{{ route('duplicate.addresses') }}" class="btn btn-primary w-100">Show 3rd output:</a>
-                    </div>
-                    @if(isset($duplicateAddresses))
-                    <div class="col-4 text-end">
-                        <h3 class="mb-0 text-dark" style="font-size: 30px">{{ $duplicateAddresses->count() ?? 'N/A' }}</h3>
-                    </div>
-                    @endif
-                </div>
-                
+                    <div class="container">
+                        <h5 class="card-title text-center mb-4 fw-bold" style="font-size: 24px; font-weight: bold; background-color: red; color: white;">3rd Output</h5>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Address</th>
+                                    <th>Count</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @isset($duplicateAddresses)
+                                @forelse($duplicateAddresses as $duplicateAddress)
+                                    <tr>
+                                        <td>{{ $duplicateAddress->address }}</td>
+                                        <td>{{ $duplicateAddress->address_count }}</td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="2">No duplicate addresses found.</td>
+                                    </tr>
+                                @endforelse
+                                @endisset
+                            </tbody>
+                        </table>
+                    </div>              
             </div>
         </div>
         
     </div>
     
 </x-app-layout>
+
